@@ -24,7 +24,10 @@ export const Categories = ({ className }: Props) => {
         <a className={cn(
           "flex items-center font-bold h-11 rounded-2xl px-5",
            categoryActiveId === index +1 &&"bg-white shadow-md shadow-gray-200 text-primary"
-          )} key={index}>
+          )} 
+          href={`/#${cat}`}
+          key={index}
+          >
           <button>{cat}</button>
         </a>
       ))}
