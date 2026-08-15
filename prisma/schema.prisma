@@ -17,7 +17,8 @@
    createdAt DateTime @default(now())
    updatedAt DateTime @updatedAt
    
-   cart Cart?
+   cart Cart[]
+   orders Order[]
  }
 
 
@@ -101,4 +102,35 @@
     quantily Int
 
     ingredients Ingredient[]
+  }
+
+
+  model Order {
+    id Int @id @default(autoincrement())
+
+    user User @relation(fields: [orderId], references: [id])
+    orderId Int
+
+    token String
+
+    totalAmount Int
+    status OrderStatus
+    paymentId String?
+
+    items Json
+
+    fullName String
+    email    String
+    phone    String
+    address  String
+    comment  String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+  }
+
+  enum OrderStatus {
+    PENDING
+    SUCCEEDED
+    CANCELLED
   }
