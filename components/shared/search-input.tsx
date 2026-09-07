@@ -32,6 +32,11 @@ export const SearchInput = ({ className }: Props) => {
     [searchQuery],
   );
 
+  const onClickItem = () => {
+    setFocused(false);
+    setProducts([]);
+  }
+
   return (
     <>
       {focused && (
@@ -64,6 +69,7 @@ export const SearchInput = ({ className }: Props) => {
           >
             {products.map((product) => (
               <Link
+                onClick={onClickItem}
                 key={product.id}
                 className="flex items-center gap-3 w-full px-3 py-2 hover:bg-primary/10"
                 href={`/product/${product.id}`}

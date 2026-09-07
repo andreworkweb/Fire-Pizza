@@ -3,52 +3,76 @@
 import { Input } from "@base-ui/react";
 import { FilterChecboxProps, FilterCheckbox } from "./filterCheckBox";
 import { useState } from "react";
+import { Skeleton } from "../ui/skeleton";
 
 type Item = FilterChecboxProps;
 
 interface Props {
   title: string;
   items: Item[];
-  defaultItems: Item[];
+  defaultItems?: Item[];
   limit?: number;
+  loading?: boolean;
   searchInputPlaceholder?: string;
-  onChange?: (values: string[]) => void;
-  className?: string;
+  onClickCheckbox?: (id: string) => void;
   defaultValue?: string[];
+  selected?: Set<string>;
+  className?: string;
+  name?: string;
 }
 
-export const CheckboxFiltersGroup = ({
+export const CheckboxFiltersGroup: React.FC<Props> = ({
   title,
   items,
   defaultItems,
   limit = 5,
-  searchInputPlaceholder = "Search...",
-  onChange,
+  searchInputPlaceholder = 'Search...',
   className,
-  defaultValue,
-}: Props) => {
+  loading,
+  onClickCheckbox,
+  selected,
+  name,
+}) => {
   const [showAll, setShowAll] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-
-  const list = items
-  .filter((item) => item.text.toLowerCase().includes(searchValue.toLowerCase()))
-  .slice(0, showAll ? items.length : limit);
+  const [searchValue, setSearchValue] = useState('');
 
   const onInputCheckedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
 
+  if (loading) {
+    return (
+      <div className={className}>
+        <p className="font-bold mb-3">{title}</p>
+
+        {...Array(limit)
+          .fill(0)
+          .map((_, index) => <Skeleton key={index} className="h-6 mb-4 rounded-[8px]" />)}
+
+        <Skeleton className="w-28 h-6 mb-4 rounded-[8px]" />
+      </div>
+    );
+  }
+
+  const list = showAll
+    ? items.filter((item) => item.text.toLowerCase().includes(searchValue.toLocaleLowerCase()))
+    : (defaultItems || items).slice(0, limit);
+
   return (
     <div>
       <p className="font-bold mb-3">{title}</p>
 
-      <div className="mb-5">
+
+      {showAll && (
+        <div className="mb-5">
         <Input
           placeholder={searchInputPlaceholder}
           className="bg-gray-50 border-none"
           onChange={onInputCheckedChange}
         />
       </div>
+      )}
+
 
       <div className="flex flex-col gap-4 max-h-96 pr-2 overflow-auto scrollbar">
         {list.map((item, index) => (
@@ -57,8 +81,8 @@ export const CheckboxFiltersGroup = ({
             text={item.text}
             value={item.value}
             endAdornment={item.endAdornment}
-            checked={false}
-            onCheckedChange={(ids) => console.log(ids)}
+            checked={selected?.has(item.value)}
+            onCheckedChange={() => onClickCheckbox?.(item.value)}
           />
         ))}
       </div>
